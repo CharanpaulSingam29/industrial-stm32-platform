@@ -1,0 +1,20 @@
+CC = arm-none-eabi-gcc
+OBJCOPY = arm-none-eabi-objcopy
+
+TARGET = industrial_platform
+
+CFLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -O2 -Wall -std=c99
+INC_DIRS = -ICore/Inc
+SRCS = Core/Src/main.c Core/Src/bsp_mcu.c Core/Src/startup.c
+LDFLAGS = -Tstm32f405.ld -nostartfiles --specs=nano.specs -Wl,-Map=$(TARGET).map
+
+all: $(TARGET).bin
+
+$(TARGET).elf: $(SRCS)
+	$(CC) $(CFLAGS) $(INC_DIRS) $(SRCS) $(LDFLAGS) -o $@
+
+$(TARGET).bin: $(TARGET).elf
+	$(OBJCOPY) -O binary $< $@
+
+clean:
+	rm -f *.elf *.bin *.map
